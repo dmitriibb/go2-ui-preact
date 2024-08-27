@@ -7,9 +7,11 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"bootstrap": "^5.3.3",
 		"preact": "^10.22.1"
 	},
 	"devDependencies": {
+		"@babel/plugin-transform-react-jsx": "^7.25.2",
 		"@preact/preset-vite": "^2.9.0",
 		"typescript": "^5.5.4",
 		"vite": "^5.3.3"

@@ -80,3 +80,18 @@ section {
 		border: 1px solid #bbb;
 	}
 }
+
+.myDiv, .myDivGreen, .myDivYellow, .myDivBlue {
+	margin: 3em;
+	min-width: 10em;
+	border: solid 1px black;
+}
+.myDivGreen {
+	background-color: green;
+}
+.myDivYellow {
+	background-color: #b7b336;
+}
+.myDivBlue {
+	background-color: #1f5caf;
+}

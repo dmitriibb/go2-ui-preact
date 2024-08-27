@@ -2,31 +2,26 @@ import { render } from 'preact';
 
 import preactLogo from './assets/preact.svg';
 import './style.css';
+import {MyTestDiv1} from "./components/MyTestDivs";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import {TestApi} from "./components/TestApi";
+import {ClientComponent} from "./components/Client";
+import {Client} from "./model/model";
 
 export function App() {
 	return (
-		<div>
-			<a href="https://preactjs.com" target="_blank">
-				<img src={preactLogo} alt="Preact logo" height="160" width="160" />
-			</a>
-			<h1>Get Started building Vite-powered Preact Apps </h1>
-			<section>
-				<Resource
-					title="Learn Preact"
-					description="If you're new to Preact, try the interactive tutorial to learn important concepts"
-					href="https://preactjs.com/tutorial"
-				/>
-				<Resource
-					title="Differences to React"
-					description="If you're coming from React, you may want to check out our docs to see where Preact differs"
-					href="https://preactjs.com/guide/v10/differences-to-react"
-				/>
-				<Resource
-					title="Learn Vite"
-					description="To learn more about Vite and how you can customize it to fit your needs, take a look at their excellent documentation"
-					href="https://vitejs.dev"
-				/>
-			</section>
+		<div className="container">
+			<div className="row">
+				<MyTestDiv1 color="myDivGreen" content="123"/>
+				<MyTestDiv1 color="myDivYellow" content="wwwww"/>
+				<MyTestDiv1 color="myDivBlue" content="--66--"/>
+			</div>
+			<div className="row">
+				<TestApi/>
+			</div>
+			<div className="row">
+				<ClientComponent client={new Client("Dima")}/>
+			</div>
 		</div>
 	);
 }

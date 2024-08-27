@@ -1,0 +1,7 @@
+.clientDiv {
+    border: 2px solid gray;
+    background-color: antiquewhite;
+    border-radius: 5px;
+    min-height: 10em;
+    min-width: 10em;
+}
