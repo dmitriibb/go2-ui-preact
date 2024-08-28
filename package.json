@@ -8,7 +8,8 @@
 	},
 	"dependencies": {
 		"bootstrap": "^5.3.3",
-		"preact": "^10.22.1"
+		"preact": "^10.22.1",
+		"pubsub-js": "^1.9.4"
 	},
 	"devDependencies": {
 		"@babel/plugin-transform-react-jsx": "^7.25.2",

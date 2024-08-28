@@ -5,3 +5,9 @@
     min-height: 10em;
     min-width: 10em;
 }
+.clientPropsList {
+    text-align: left;
+}
+.clientPropsListItem {
+    text-align: left;
+}

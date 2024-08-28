@@ -4,9 +4,11 @@ export class Client {
     id: string
     tableNumber: number
     orderedItems: [string]
+    enteredRestaurant = false
 
     constructor(name: string) {
         this.name = name;
+        this.orderedItems = []
     }
 }
 
@@ -15,4 +17,15 @@ export class EnterRestaurantResponse {
     message: string
     status: string
     tableNumber: number
+}
+
+export class MenuItem {
+    name: string
+    price: number
+    description: string
+    ingredients: [string]
+}
+
+export class Menu {
+    items: [MenuItem]
 }

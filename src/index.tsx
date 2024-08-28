@@ -22,6 +22,9 @@ export function App() {
 			<div className="row">
 				<ClientComponent client={new Client("Dima")}/>
 			</div>
+			<div className="row">
+				<ClientComponent client={new Client("Vova")}/>
+			</div>
 		</div>
 	);
 }
