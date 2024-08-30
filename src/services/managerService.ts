@@ -1,4 +1,4 @@
-import {EnterRestaurantResponse, Menu, MenuItem} from "../model/model"
+import {ClientOrder, ClientOrderResponse, EnterRestaurantResponse, Menu, MenuItem, OrderItem} from "../model/model"
 
 const go2ManagerUrl = "localhost:9010"
 
@@ -23,6 +23,18 @@ class ManagerService {
             method: 'GET',
         }).then(response => response.json())
             .then(res => Object.assign(new Menu, res))
+    }
+
+    makeAnOrder(clientId: string, items: string[]): Promise<ClientOrderResponse> {
+        const orderItems = items.map(i => new OrderItem(i))
+        return fetch(`http://${go2ManagerUrl}/client-orders`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: JSON.stringify(new ClientOrder(clientId, orderItems))
+        }).then(response => response.json())
+            .then(res => Object.assign(new ClientOrderResponse, res))
     }
 }
 

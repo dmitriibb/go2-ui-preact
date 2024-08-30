@@ -11,3 +11,9 @@
 .clientPropsListItem {
     text-align: left;
 }
+.tableWithFoodDiv {
+    border: dotted 2px black;
+    margin: 5px;
+    padding: 5px;
+    background-color: darkgray;
+}

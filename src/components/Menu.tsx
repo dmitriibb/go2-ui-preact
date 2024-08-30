@@ -4,7 +4,7 @@ import "./menuStyles.css"
 import {pubSubService} from "../services/pubSubService";
 
 class MenuComponentProps {
-    clientName: string
+    clientId: string
     menu: Menu
 }
 
@@ -23,7 +23,7 @@ export class MenuComponent extends Component<MenuComponentProps, any> {
             <div class="menu col-7">
                 Menu:
                 {props.menu.items.map(menuItem =>
-                    <MenuItemComponent key={menuItem.name} item={menuItem} clientName={props.clientName}/>
+                    <MenuItemComponent key={menuItem.name} item={menuItem} clientId={props.clientId}/>
                 )}
             </div>
         )
@@ -32,34 +32,49 @@ export class MenuComponent extends Component<MenuComponentProps, any> {
 }
 
 class MenuItemComponentProps {
-    clientName: string
+    clientId: string
     item: MenuItem
+}
+
+class MenuItemComponentState {
+    clientId: string
+    item: MenuItem
+    picked: boolean
 }
 
 export class MenuItemComponent extends Component<MenuItemComponentProps, any> {
     menuItem: MenuItem
-    clientName: string
+    picked = false
+    clientId: string
     constructor(props) {
         super(props);
         this.menuItem = props.item
-        this.clientName = props.clientName
+        this.clientId = props.clientId
         this.state = {
-            item: this.menuItem
+            item: this.menuItem,
+            picked: this.picked
         }
     }
-    select = () => {
-        console.log(`select ${this.menuItem.name}`)
-        pubSubService.clientPickedMenuItem(this.clientName, this.menuItem.name)
+    select = (event) => {
+        this.picked = event.currentTarget.checked
+        if (this.picked) {
+            console.log(`select ${this.menuItem.name}`)
+            pubSubService.clientPickedMenuItem(this.clientId, this.menuItem.name)
+        } else  {
+            console.log(`unselect ${this.menuItem.name}`)
+            pubSubService.clientUnpickedMenuItem(this.clientId, this.menuItem.name)
+        }
+
     }
 
-    render(props?: Readonly<MenuItemComponentProps>, state?: Readonly<MenuItemComponentProps>, context?: any): ComponentChild {
+    render(props?: Readonly<MenuItemComponentProps>, state?: Readonly<MenuItemComponentState>, context?: any): ComponentChild {
         return (
             <div class="menuItem">
                 <div className="row">
                     <div className="col-3">{props.item.name}</div>
                     <div className="col-3">{props.item.price}</div>
                     <div className="col-3">
-                        <input type="checkbox" onInput={this.select}/>
+                        <input type="checkbox" onChange={this.select}/>
                     </div>
                 </div>
                 <div className="row">

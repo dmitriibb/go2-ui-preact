@@ -1,12 +1,14 @@
 import { PubSub } from 'pubsub-js';
+import {ReadyOrderItem} from "../model/model";
 
 export class ClientPubSubEvent {
-    clientName: string
+    clientId: string
     type: ClientPubSubEventType
     data: string
+    dataObj: any
 
-    constructor(clientName: string, type: ClientPubSubEventType, data: string) {
-        this.clientName = clientName;
+    constructor(clientId: string, type: ClientPubSubEventType, data: string) {
+        this.clientId = clientId;
         this.type = type;
         this.data = data;
     }
@@ -14,7 +16,9 @@ export class ClientPubSubEvent {
 
 export enum ClientPubSubEventType {
     MenuItemPick,
-    MenuItemUnpick
+    MenuItemUnpick,
+    OrderItemReadyReceived
+
 }
 
 const clientEventsTopic = "client_events"
@@ -23,6 +27,7 @@ export class PubSubService {
 
     // @ts-ignore
     subscribeForClientEvents(clientName: string, sub: (topicName, msg: ClientPubSubEvent) => {}) {
+        // every client subscribes to all clients' event. then just ignores others'
         return PubSub.subscribe(clientEventsTopic, sub)
     }
 
@@ -30,11 +35,22 @@ export class PubSubService {
         PubSub.unsubscribe(token)
     }
 
-    clientPickedMenuItem(clientName: string, menuItem: string) {
+    clientPickedMenuItem(clientId: string, menuItem: string) {
         PubSub.publish(
             clientEventsTopic,
-            new ClientPubSubEvent(clientName, ClientPubSubEventType.MenuItemPick, menuItem),
+            new ClientPubSubEvent(clientId, ClientPubSubEventType.MenuItemPick, menuItem),
         )
+    }
+    clientUnpickedMenuItem(clientId: string, menuItem: string) {
+        PubSub.publish(
+            clientEventsTopic,
+            new ClientPubSubEvent(clientId, ClientPubSubEventType.MenuItemUnpick, menuItem),
+        )
+    }
+    clientReceivedReadyOrderItem(clientId: string, readyOrderItem: ReadyOrderItem) {
+        const event = new ClientPubSubEvent(clientId, ClientPubSubEventType.OrderItemReadyReceived, "")
+        event.dataObj = readyOrderItem
+        PubSub.publish(clientEventsTopic, event)
     }
 }
 

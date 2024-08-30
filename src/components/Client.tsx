@@ -1,25 +1,34 @@
 import {Attributes, Component, ComponentChild, ComponentChildren, Ref} from "preact";
-import {Client, Menu} from "../model/model";
+import {Client, Menu, ReadyOrderItem} from "../model/model";
 import {managerService} from "../services/managerService";
 import {MenuComponent} from "./Menu";
 import "./clientStyles.css"
 import {ClientPubSubEvent, ClientPubSubEventType, pubSubService} from "../services/pubSubService";
+import {wsService} from "../services/wsService";
+import {ClientTableComponent} from "./ClientTable";
+
+class ClientComponentProps {
+    client: Client
+}
 
 class ClientComponentState {
     client: Client
     menu: Menu
+    readyOrderItems: ReadyOrderItem[]
 }
 
-export class ClientComponent extends Component<ClientComponentState, any> {
+export class ClientComponent extends Component<ClientComponentProps, any> {
     client: Client
     menu: Menu
+    readyOrderItems: ReadyOrderItem[] = []
     pubsubToken: any
     constructor(props: ClientComponentState) {
         super(props);
         this.client = props.client ? this.props.client : new Client("Dima")
         this.state = {
             client: this.client,
-            menu: this.menu
+            menu: this.menu,
+            readyOrderItems: this.readyOrderItems
         }
     }
 
@@ -30,16 +39,8 @@ export class ClientComponent extends Component<ClientComponentState, any> {
         })
     }
 
-    componentWillMount() {
-        console.log(`${this.client.name} subscribe for client events`)
-        this.pubsubToken = pubSubService.subscribeForClientEvents(this.client.name, (_, msg) => {
-            this.menuSelectEvent(msg)
-        })
-    }
-
-    menuSelectEvent(event: ClientPubSubEvent) {
-        if (event.clientName != this.client.name) {
-            console.warn(`${this.client.name} received event for ${event.clientName}`)
+    clientEventListen(event: ClientPubSubEvent) {
+        if (event.clientId != this.client.id) {
             return
         }
         switch (event.type) {
@@ -56,16 +57,28 @@ export class ClientComponent extends Component<ClientComponentState, any> {
                     this.updateClientState()
                 }
                 break
+            case ClientPubSubEventType.OrderItemReadyReceived:
+                const item: ReadyOrderItem = event.dataObj
+                console.log("%s received ready order item %s", this.client.name, item.dishName)
+                this.readyOrderItems.push(item)
+                this.updateClientState()
+                break
         }
     }
 
     componentWillUnmount() {
-        console.log(`${this.client.name} unsubscribe from client events`)
-        pubSubService.unsubscribe(this.pubsubToken)
+        this.unsubscribeFromClientEvents()
+        wsService.closeWsManager(this.client.id)
+        wsService.closeWsWaiter(this.client.id)
     }
 
-    manuallyUnsubscribe = () => {
-        this.componentWillUnmount()
+    makeAnOrder = () => {
+        managerService.makeAnOrder(this.client.id, this.client.orderedItems)
+            .then(res => {
+                console.log(res)
+                wsService.connectToManager(this.client.id)
+            })
+            .catch(err => console.error(err))
     }
 
     enterRestaurant = () => {
@@ -76,10 +89,28 @@ export class ClientComponent extends Component<ClientComponentState, any> {
                 this.client.tableNumber = result.tableNumber
                 this.client.enteredRestaurant = true
                 // this.setState({client: this.client})
+                this.subscribeForClientEvents()
                 this.updateClientState()
             }).catch(error => {
                 console.error(`can't enterRestaurant because ${error}`)
             })
+    }
+
+    unsubscribeFromClientEvents = () => {
+        console.log(`${this.client.name} unsubscribe from client events`)
+        pubSubService.unsubscribe(this.pubsubToken)
+        this.pubsubToken = null
+    }
+
+    subscribeForClientEvents = () => {
+        if (this.pubsubToken) {
+            console.warn(`${this.client.id} can't subscribe for event because already subscribed`)
+            return
+        }
+        console.log(`${this.client.name} subscribe for client events`)
+        this.pubsubToken = pubSubService.subscribeForClientEvents(this.client.name, (_, msg) => {
+            this.clientEventListen(msg)
+        })
     }
 
     askForMenu = () => {
@@ -93,9 +124,9 @@ export class ClientComponent extends Component<ClientComponentState, any> {
         })
     }
 
-    render(props?: Readonly<ClientComponentState>, state?: Readonly<ClientComponentState>, context?: any): ComponentChild {
+    render(props?: Readonly<ClientComponentProps>, state?: Readonly<ClientComponentState>, context?: any): ComponentChild {
         let menuFragment = state.menu
-            ? <MenuComponent menu={state.menu} clientName={props.client.name}/>
+            ? <MenuComponent menu={state.menu} clientId={props.client.id}/>
             : 'no menu'
         return (
             <div class="clientDiv col">
@@ -118,10 +149,31 @@ export class ClientComponent extends Component<ClientComponentState, any> {
                             </button>
                         </div>
                         <div className="row">
-                            <button onClick={this.manuallyUnsubscribe}>unsubscribe from events</button>
+                            <button onClick={this.makeAnOrder}>order</button>
                         </div>
                     </div>
                     {menuFragment}
+                </div>
+                {/*food items*/}
+                <div class="row">
+                    <div class="col-12">
+                        <ClientTableComponent items={state.readyOrderItems}/>
+                    </div>
+                </div>
+                {/*buttons*/}
+                <div class="row">
+                    <div className="row">
+                        <button onClick={this.enterRestaurant} disabled={props.client.enteredRestaurant}>
+                            enter restaurant
+                        </button>
+                    </div>
+                    <div className="row">
+                        <button onClick={this.askForMenu} disabled={!props.client.enteredRestaurant}>ask menu
+                        </button>
+                    </div>
+                    <div className="row">
+                        <button onClick={this.makeAnOrder}>order</button>
+                    </div>
                 </div>
             </div>
         )
