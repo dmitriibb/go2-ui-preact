@@ -20,35 +20,24 @@ export function App() {
 	}
 
 	return (
-		<div className="container">
-			<div className="row">
-				<MyTestDiv1 color="myDivGreen" content="123"/>
-				<MyTestDiv1 color="myDivYellow" content="wwwww"/>
-				<MyTestDiv1 color="myDivBlue" content="--66--"/>
-			</div>
+		<div className="container-fluid">
 			<div className="row">
 				<TestApi/>
 			</div>
 			<div class="row">
-				client name:
-				<input class="col-5" style={{marginLeft: '5px'}} type="text" value={clientName} onInput={evt => setClientName(evt.currentTarget.value)}/>
-				<button class="col-3" style={{marginLeft: '5em'}} disabled={!clientName.length} onClick={addClient} placeholder="client name">add client</button>
+				<div class="col-md-4">client name:</div>
+				<input class="col-md-4" type="text" value={clientName} onInput={evt => setClientName(evt.currentTarget.value)}/>
+				<button class="col-md-4" disabled={!clientName.length} onClick={addClient} placeholder="client name">add client</button>
 			</div>
-			{clients.map(client => {
-				return (<div class="row">
-					<ClientComponent client={client}/>
-				</div>)
-			})}
-		</div>
-	);
-}
+			<div class="row">
+				{clients.map(client => {
+					return (<div class="col-md-6">
+						<ClientComponent client={client}/>
+					</div>)
+				})}
+			</div>
 
-function Resource(props) {
-	return (
-		<a href={props.href} target="_blank" class="resource">
-			<h2>{props.title}</h2>
-			<p>{props.description}</p>
-		</a>
+		</div>
 	);
 }
 

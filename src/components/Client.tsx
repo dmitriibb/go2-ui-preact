@@ -126,7 +126,9 @@ export class ClientComponent extends Component<ClientComponentProps, any> {
 
     render(props?: Readonly<ClientComponentProps>, state?: Readonly<ClientComponentState>, context?: any): ComponentChild {
         let menuFragment = state.menu
-            ? <MenuComponent menu={state.menu} clientId={props.client.id}/>
+            ? <div class="col-7">
+                <MenuComponent menu={state.menu} clientId={props.client.id}/>
+            </div>
             : 'no menu'
         return (
             <div class="clientDiv col">
@@ -139,18 +141,6 @@ export class ClientComponent extends Component<ClientComponentProps, any> {
                             <li className="clientPropsListItem">table: {props.client.tableNumber}</li>
                             <li className="clientPropsListItem">items: [{props.client.orderedItems.join(", ")}]</li>
                         </ul>
-                        <div className="row">
-                            <button onClick={this.enterRestaurant} disabled={props.client.enteredRestaurant}>
-                                enter restaurant
-                            </button>
-                        </div>
-                        <div className="row">
-                            <button onClick={this.askForMenu} disabled={!props.client.enteredRestaurant}>ask menu
-                            </button>
-                        </div>
-                        <div className="row">
-                            <button onClick={this.makeAnOrder}>order</button>
-                        </div>
                     </div>
                     {menuFragment}
                 </div>
@@ -162,18 +152,16 @@ export class ClientComponent extends Component<ClientComponentProps, any> {
                 </div>
                 {/*buttons*/}
                 <div class="row">
-                    <div className="row">
-                        <button onClick={this.enterRestaurant} disabled={props.client.enteredRestaurant}>
-                            enter restaurant
-                        </button>
-                    </div>
-                    <div className="row">
-                        <button onClick={this.askForMenu} disabled={!props.client.enteredRestaurant}>ask menu
-                        </button>
-                    </div>
-                    <div className="row">
-                        <button onClick={this.makeAnOrder}>order</button>
-                    </div>
+                    <button class="col-md-3" style={{marginRight: '3px'}}
+                            onClick={this.enterRestaurant}
+                            disabled={props.client.enteredRestaurant}>
+                        enter restaurant</button>
+                    <button class="col-md-3" style={{marginRight: '3px'}}
+                            onClick={this.askForMenu}
+                            disabled={!props.client.enteredRestaurant}>
+                        ask menu</button>
+                    <button class="col-md-3" style={{marginRight: '3px'}} onClick={this.makeAnOrder}>
+                        order</button>
                 </div>
             </div>
         )

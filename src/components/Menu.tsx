@@ -20,7 +20,7 @@ export class MenuComponent extends Component<MenuComponentProps, any> {
 
     render(props?: Readonly<MenuComponentProps>, state?: Readonly<MenuComponentProps>, context?: any): ComponentChild {
         return (
-            <div class="menu col-7">
+            <div>
                 Menu:
                 {props.menu.items.map(menuItem =>
                     <MenuItemComponent key={menuItem.name} item={menuItem} clientId={props.clientId}/>
